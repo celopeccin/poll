@@ -26,7 +26,7 @@ class PollVote extends PollsAppModel {
 			),
 		'poll_option_id' => array(
 			'notempty' => array(
-				'rule' => array('notempty'),
+				'rule' => array('notBlank'),
 				//'message' => 'Your custom message here',
 				//'allowEmpty' => false,
 				//'required' => false,

@@ -1,6 +1,4 @@
 <?php
-
-
 /**
  * Admin menu (navigation)
  */

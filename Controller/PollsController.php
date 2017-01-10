@@ -6,42 +6,30 @@ App::uses('PollsAppController', 'Polls.Controller');
  * @property Poll $Poll
  */
 class PollsController extends PollsAppController {
-	public $components = array(
-        "RequestHandler", "Cookie",
-        'Security'
-        );
-/**
- * Name
- *
- * @var string
- */
 	public $name = 'Polls';
-
-/**
- * Uses model
- *
- * @var string
- */
 	public $uses = 'Polls.Poll';
+	public $components = array('RequestHandler', 'Cookie', 'Security');
 
 
-/**
- * beforeFilter callback
- *
- */
-	public function beforeFilter(){
+	/**
+	 * beforeFilter callback
+	 *
+	 */
+	public function beforeFilter() 
+	{
 		$this->Security->unlockedActions = array('admin_edit', 'admin_add', 'submit_poll');
 		parent::beforeFilter();
 	}
-/**
- * check IP & save poller to list
- *
- * @param string $id
- * @return void
- */
 
-	private function checkExistIP($id, $saveIP = false){
-		App::import('Vendor', 'Polls.Flatfile', array('file'=>'flatfile.php'));
+	/**
+	 * check IP & save poller to list
+	 *
+	 * @param string $id
+	 * @return void
+	 */
+	private function checkExistIP($id, $saveIP = false) 
+	{
+		App::import('Vendor', 'Polls.Flatfile', array('file' => 'flatfile.php'));
 		//initial flatfile database
 		$ff = new Flatfile();
 		$ff->datadir = TMP.DS.'cache'.DS;
@@ -60,11 +48,13 @@ class PollsController extends PollsAppController {
 
 		return true;
 	}
-/*
-* Ajax get answers by question id
-* Type: Json
-*/
-    public function get_answers($questionId) {
+
+	/*
+	* Ajax get answers by question id
+	* Type: Json
+	*/
+    public function get_answers($questionId) 
+    {
     	$this->autoRender = false;
 
     	if(!$questionId){
@@ -72,45 +62,52 @@ class PollsController extends PollsAppController {
     	}
 
         $answers = $this->Poll->PollOption->find('all', array(
-        				'conditions'=>array('PollOption.poll_id'=>$questionId),
-        				'order'=>array('PollOption.ordered'=>'ASC')
-        			));
+        	'conditions'=>array('PollOption.poll_id'=>$questionId),
+        	'order'=>array('PollOption.ordered'=>'ASC')
+        ));
         $answersList = array();
         foreach ($answers as $answer) {
         	$answersList[] = array('id'=>$answer['PollOption']['id'],'text'=>$answer['PollOption']['option'], 'ordered'=>$answer['PollOption']['ordered']);
         }
+
         echo json_encode($answersList);
     }
-/**
- * submit_poll method
- *
- * @return boolean
- */
-	public function submit_poll(){
+
+	/**
+	 * submit_poll method
+	 *
+	 * @return boolean
+	 */
+	public function submit_poll() 
+	{
 		$this->autoRender = false;
 
 		if ($this->request->is('post') || $this->request->is('put')) {
 			$id = $this->request->data['PollVote']['poll_id'];
-			if($this->Poll->PollVote->save($this->request->data)){
+			if ($this->Poll->PollVote->save($this->request->data)) {
 				//save IP
 				$this->checkExistIP($id, true);
 				//save cookie
 				$this->Cookie->write('YouPoll_'.$id, true);
-				return true;
+				//return true;
+				$this->Session->setFlash(__d('croogo', 'Seu voto foi contabilizado!'), 'flash', array('class' => 'success'));
+				return $this->redirect($this->request->referer());
 			}
-
 		}
-		return false;
+
+		//return false;
+		$this->Session->setFlash(__d('croogo', 'Seu voto não foi contabilizado!'), 'flash', array('class' => 'error'));
+		return $this->redirect($this->request->referer());
 	}
 
-
-/**
- * get_poll method
- *
- * @param string $id
- * @return void
- */
-	public function get_poll($id = null) {
+	/**
+	 * get_poll method
+	 *
+	 * @param string $id
+	 * @return void
+	 */
+	public function get_poll($id = null) 
+	{
 		$this->autoRender = false;
 
 		$poll_data = array();
@@ -165,36 +162,39 @@ class PollsController extends PollsAppController {
 
 		return json_encode($poll_data);
 	}
-/**
- * view poll method
- *
- * @param string $id
- * @return void
- */
-	public function index($id = null) {
+
+	/**
+	 * view poll method
+	 *
+	 * @param string $id
+	 * @return void
+	 */
+	public function index($id = null) 
+	{
 		$this->Poll->id = $id;
 		if (!$this->Poll->exists()) {
 			throw new NotFoundException(__d('polls','Invalid poll'));
 		}
 
 		$poll = $this->Poll->find('first', array(
-				'conditions' => array('Poll.id'=>$id),
-				'order' => array('Poll.created' => 'DESC'),
-				'contain' => array(
-						'PollOption'=>array('order'=>array('PollOption.ordered'=>'ASC')),
-						'PollVote'
-					)
+			'conditions' => array('Poll.id'=>$id),
+			'order' => array('Poll.created' => 'DESC'),
+			'contain' => array(
+				'PollOption'=>array('order'=>array('PollOption.ordered'=>'ASC')),
+				'PollVote'
+			)
 		));
 
 		$this->set(compact('id', 'poll'));
 	}
 
-/**
- * index method
- *
- * @return void
- */
-	public function admin_index() {
+	/**
+	 * index method
+	 *
+	 * @return void
+	 */
+	public function admin_index() 
+	{
 		$this->Poll->recursive = 0;
 		$this->paginate = array(
 		    'order' => array('Poll.created'=>'DESC')
@@ -202,15 +202,14 @@ class PollsController extends PollsAppController {
 		$this->set('polls', $this->paginate());
 	}
 
-
-
-/**
- * view method
- *
- * @param string $id
- * @return void
- */
-	public function admin_view($id = null) {
+	/**
+	 * view method
+	 *
+	 * @param string $id
+	 * @return void
+	 */
+	public function admin_view($id = null) 
+	{
 		$this->Poll->id = $id;
 		if (!$this->Poll->exists()) {
 			throw new NotFoundException(__d('polls','Invalid poll'));
@@ -228,12 +227,13 @@ class PollsController extends PollsAppController {
 		$this->set(compact('id', 'poll'));
 	}
 
-/**
- * add method
- *
- * @return void
- */
-	public function admin_add() {
+	/**
+	 * add method
+	 *
+	 * @return void
+	 */
+	public function admin_add() 
+	{
 		if ($this->request->is('post') || $this->request->is('put')) {
 			$this->Poll->create();
 			//pr($this->request->data);exit;
@@ -246,13 +246,14 @@ class PollsController extends PollsAppController {
 		}
 	}
 
-/**
- * edit method
- *
- * @param string $id
- * @return void
- */
-	public function admin_edit($id = null) {
+	/**
+	 * edit method
+	 *
+	 * @param string $id
+	 * @return void
+	 */
+	public function admin_edit($id = null) 
+	{
 		$this->Poll->id = $id;
 		if (!$this->Poll->exists()) {
 			throw new NotFoundException(__d('polls','Invalid poll'));
@@ -271,13 +272,14 @@ class PollsController extends PollsAppController {
 		}
 	}
 
-/**
- * delete method
- *
- * @param string $id
- * @return void
- */
-	public function admin_delete($id = null) {
+	/**
+	 * delete method
+	 *
+	 * @param string $id
+	 * @return void
+	 */
+	public function admin_delete($id = null) 
+	{
 		if (!$this->request->is('post')) {
 			throw new MethodNotAllowedException();
 		}

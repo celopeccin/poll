@@ -3,7 +3,7 @@
 <div class="row-fluid">
 	<div class="span12 actions">
 		<ul class="nav-buttons">
-			<li><a href="/admin/polls/polls/add/#/edit_poll/0" method="get" class="btn btn-success">Добавить</a></li>
+			<li><a href="/admin/polls/polls/add/#/edit_poll/0" method="get" class="btn btn-success">New poll</a></li>
 		</ul>
 	</div>
 </div>

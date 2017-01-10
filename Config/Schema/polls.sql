@@ -1,18 +1,3 @@
-/*
-Navicat MySQL Data Transfer
-
-Source Server         : localhost
-Source Server Version : 50511
-Source Host           : localhost:3306
-Source Database       : polls
-
-Target Server Type    : MYSQL
-Target Server Version : 50511
-File Encoding         : 65001
-
-Date: 2013-04-04 17:13:13
-*/
-
 SET FOREIGN_KEY_CHECKS=0;
 -- ----------------------------
 -- Table structure for `polls`
